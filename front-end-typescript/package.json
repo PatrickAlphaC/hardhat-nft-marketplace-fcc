@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "moralis:sync": "moralis-admin-cli connect-local-devchain --chain hardhat --moralisSubdomain 16ffrdaojybx.usemoralis.com --frpcPath ./frp/frpc",
-    "moralis:cloud": "moralis-admin-cli watch-cloud-folder  --moralisSubdomain 16ffrdaojybx.usemoralis.com --autoSave 1 --moralisCloudfolder ./cloudFunctions",
-    "moralis:logs": "moralis-admin-cli get-logs --moralisSubdomain 16ffrdaojybx.usemoralis.com"
+    "moralis:sync": "moralis-admin-cli connect-local-devchain --chain hardhat --moralisSubdomain XXX.usemoralis.com --frpcPath ./frp/frpc",
+    "moralis:cloud": "moralis-admin-cli watch-cloud-folder  --moralisSubdomain XXX.usemoralis.com --autoSave 1 --moralisCloudfolder ./cloudFunctions",
+    "moralis:logs": "moralis-admin-cli get-logs --moralisSubdomain XXX.usemoralis.com"
   },
   "dependencies": {
     "axios": "^0.26.1",

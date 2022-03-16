@@ -14,6 +14,7 @@ error AlreadyListed(address nftAddress, uint256 tokenId);
 error NoProceeds();
 error NotOwner();
 error NotApprovedForMarketplace();
+error PriceMustBeAboveZero();
 
 contract NftMarketplace is ReentrancyGuard {
     struct Listing {
@@ -102,6 +103,9 @@ contract NftMarketplace is ReentrancyGuard {
         notListed(nftAddress, tokenId, msg.sender)
         isOwner(nftAddress, tokenId, msg.sender)
     {
+        if (price <= 0) {
+            revert PriceMustBeAboveZero();
+        }
         IERC721 nft = IERC721(nftAddress);
         if (nft.getApproved(tokenId) != address(this)) {
             revert NotApprovedForMarketplace();

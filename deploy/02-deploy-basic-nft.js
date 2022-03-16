@@ -11,7 +11,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     log("----------------------------------------------------")
     const arguments = []
-    const nftMarketplace = await deploy("BasicNft", {
+    const basicNft = await deploy("BasicNft", {
         from: deployer,
         args: arguments,
         log: true,
@@ -21,7 +21,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // Verify the deployment
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
         log("Verifying...")
-        await verify(raffle.address, arguments)
+        await verify(basicNft.address, arguments)
     }
     log("----------------------------------------------------")
 }

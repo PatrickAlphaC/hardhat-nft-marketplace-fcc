@@ -1,0 +1,36 @@
+{
+  "name": "front-end-typescript",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "moralis:sync": "moralis-admin-cli connect-local-devchain --chain hardhat --moralisSubdomain 16ffrdaojybx.usemoralis.com --frpcPath ./frp/frpc",
+    "moralis:cloud": "moralis-admin-cli watch-cloud-folder  --moralisSubdomain 16ffrdaojybx.usemoralis.com --autoSave 1 --moralisCloudfolder ./cloudFunctions",
+    "moralis:logs": "moralis-admin-cli get-logs --moralisSubdomain 16ffrdaojybx.usemoralis.com"
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "cors": "^2.8.5",
+    "ethers": "^5.6.0",
+    "js-ipfs-fetch": "^3.5.0",
+    "moralis": "^1.3.5",
+    "next": "12.1.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-moralis": "^1.3.2",
+    "web3uikit": "^0.1.76"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.21",
+    "@types/react": "17.0.40",
+    "dotenv": "^16.0.0",
+    "eslint": "8.11.0",
+    "eslint-config-next": "12.1.0",
+    "postcss-preset-env": "^7.4.2",
+    "tailwindcss": "^3.0.23",
+    "typescript": "4.6.2"
+  }
+}

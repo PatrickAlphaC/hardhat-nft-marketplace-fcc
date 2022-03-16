@@ -34,12 +34,5 @@ yarn-error.log*
 # vercel
 .vercel
 
-.env 
-artifacts
-cache 
-coverage.json 
-
-front-end/node_modules
-frp
-frpc.ini
-front-end/testMoralis.html
+# typescript
+*.tsbuildinfo

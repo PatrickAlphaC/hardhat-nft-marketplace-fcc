@@ -1,4 +1,5 @@
 import "../styles/globals.css"
+import Head from "next/head"
 import type { AppProps } from "next/app"
 import { MoralisProvider, useMoralis } from "react-moralis"
 import Header from "../components/Header"
@@ -14,12 +15,18 @@ const client = new ApolloClient({
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
-        <MoralisProvider appId={APP_ID!} serverUrl={SERVER_URL!} initializeOnMount={true}>
+        <>
+            <Head>
+                <title>NFT Marketplace</title>
+                <link rel="shortcut icon" href="/favicon.ico" />
+            </Head>
+            <MoralisProvider appId={APP_ID!} serverUrl={SERVER_URL!} initializeOnMount={true}>
             <ApolloProvider client={client}>
                 <Header />
                 <Component {...pageProps} />
             </ApolloProvider>
-        </MoralisProvider>
+            </MoralisProvider>
+        </>
     )
 }
 export default MyApp

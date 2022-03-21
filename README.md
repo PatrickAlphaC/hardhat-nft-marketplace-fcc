@@ -96,14 +96,18 @@ In your `front-end-typescript/package.json` update the following lines:
 "moralis:logs": "moralis-admin-cli get-logs --moralisSubdomain XXX.usemoralis.com"
 ```
 
-Replace the `XXX.usemoralis.com` with your subdomain, like `4444acatycat.usemoralis.com`
+Replace the `XXX.usemoralis.com` with your subdomain, like `4444acatycat.usemoralis.com`and update the `moralis:sync` script's path to your instance of `frp` (downloaded as part of the Moralis "Devchain Proxy Server" instructions mentioned above)
 
-Then run `yarn moralis:cloud` in one terminal, and run `yarm moralis:logs` in another. 
+If you don't have `moralis-admin-cli` installed already, install it globally with `npm i -g moralis-admin-cli`.
+
+Then run `yarn moralis:cloud` in one terminal, and run `yarn moralis:logs` in another. Make sure you're in the `front-end-typescript` directory in each terminal.
 
 If you hit the little down arrow in your server, then hit `Cloud Functions` you should see text in there. 
 
 <img src="./img/down-arrow.png" width="500" alt="Cloud Functions Up">
 <img src="./img/functions.png" width="250" alt="Cloud Functions Up">
+
+Run `yarn moralis:sync` in another terminal to connect your local Hardhat devchain with your Moralis instance.
 
 2d. Add your event listeners
 

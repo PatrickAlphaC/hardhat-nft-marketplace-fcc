@@ -18,9 +18,9 @@ const Home: NextPage = () => {
     )
 
     return (
-        <div>
+        <div className="container mx-auto">
             <h1 className="py-4 px-4 font-bold text-2xl">Recently Listed</h1>
-            <div className="grid grid-cols-3">
+            <div className="flex flex-wrap">
                 {fetchingListedNfts ? (
                     <div>Loading...</div>
                 ) : (

@@ -63,6 +63,8 @@ const NFTBox: NextPage<NFTBoxProps> = ({
     const { chainId } = useMoralis()
     const Web3Api = useMoralisWeb3Api()
     const [imageURI, setImageURI] = useState<string | undefined>()
+    const [tokenName, setTokenName] = useState<string | undefined>()
+    const [tokenDescription, setTokenDescription] = useState<string | undefined>()
 
     const { runContractFunction: getTokenURI, data: tokenURI } = useWeb3Contract({
         abi: nftAbi,
@@ -90,9 +92,11 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         if (tokenURI) {
             const requestURL = (tokenURI as string).replace("ipfs://", "https://ipfs.io/ipfs/")
             const tokenURIResponse = await (await fetch(requestURL)).json()
-            const imageURI = (tokenURIResponse as any).image
+            const imageURI = tokenURIResponse.image
             const imageURIURL = (imageURI as string).replace("ipfs://", "https://ipfs.io/ipfs/")
             setImageURI(imageURIURL)
+            setTokenName(tokenURIResponse.name)
+            setTokenDescription(tokenURIResponse.description)
         }
     }
 
@@ -123,6 +127,7 @@ const NFTBox: NextPage<NFTBoxProps> = ({
     //         console.log(e)
     //     }
     // }
+
     async function buy() {
         await buyItem()
         console.log(tokenId)
@@ -132,18 +137,31 @@ const NFTBox: NextPage<NFTBoxProps> = ({
     return (
         <div className="p-2">
             <Card
-                title={`${ethers.utils.formatEther(price)} ETH`}
+                title={tokenName}
+                description={tokenDescription}
                 onClick={async () => await buy()}
             >
                 <Tooltip content="Buy me" position="top">
-                    {imageURI ? (
-                        <Image loader={() => imageURI} src={imageURI} height="200%" width="200%" />
-                    ) : (
-                        <div>
-                            <Illustration height="180px" logo="lazyNft" width="100%" />
-                            Loading...
-                        </div>
-                    )}
+                    <div className="p-2">
+                        {imageURI ? (
+                            <div className="flex flex-col items-end gap-2">
+                                <Image
+                                    loader={() => imageURI}
+                                    src={imageURI}
+                                    height="200"
+                                    width="200"
+                                />
+                                <div className="font-bold">
+                                    {ethers.utils.formatEther(price)} ETH
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center gap-1">
+                                <Illustration height="180px" logo="lazyNft" width="100%" />
+                                Loading...
+                            </div>
+                        )}
+                    </div>
                 </Tooltip>
             </Card>
         </div>

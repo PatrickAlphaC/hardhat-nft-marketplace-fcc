@@ -1,0 +1,17 @@
+{
+  "name": "graph-nft-marketplace",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ graph-nft-marketplace",
+    "create-local": "graph create --node http://localhost:8020/ graph-nft-marketplace",
+    "remove-local": "graph remove --node http://localhost:8020/ graph-nft-marketplace",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 graph-nft-marketplace"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.28.0",
+    "@graphprotocol/graph-ts": "0.26.0",
+    "ethers": "^5.6.1"
+  }
+}

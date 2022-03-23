@@ -1,7 +1,7 @@
 const { ethers, network } = require("hardhat")
 const { moveBlocks } = require("../utils/move-blocks")
 
-const TOKEN_ID = 24
+const TOKEN_ID = 0
 
 async function mintAndList() {
     const nftMarketplace = await ethers.getContract("NftMarketplace")

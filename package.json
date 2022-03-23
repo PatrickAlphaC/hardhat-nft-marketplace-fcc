@@ -32,5 +32,8 @@
   },
   "mocha": {
     "timeout": 10000000
+  },
+  "dependencies": {
+    "@apollo/client": "^3.5.10"
   }
 }

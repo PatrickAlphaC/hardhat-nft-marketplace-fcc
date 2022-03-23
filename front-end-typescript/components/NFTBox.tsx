@@ -60,7 +60,7 @@ const NFTBox: NextPage<NFTBoxProps> = ({
     tokenId,
     nftMarketplaceAddress,
 }: NFTBoxProps) => {
-    const { chainId } = useMoralis()
+    const { isWeb3Enabled } = useMoralis()
     const Web3Api = useMoralisWeb3Api()
     const [imageURI, setImageURI] = useState<string | undefined>()
     const [tokenName, setTokenName] = useState<string | undefined>()
@@ -105,8 +105,8 @@ const NFTBox: NextPage<NFTBoxProps> = ({
     }, [tokenURI])
 
     useEffect(() => {
-        getTokenURI()
-    }, [])
+        isWeb3Enabled && getTokenURI()
+    }, [isWeb3Enabled])
 
     // These only work on valid chains, sorry - doesn't work locally
     // const options: tokenIdMetadataParams = {

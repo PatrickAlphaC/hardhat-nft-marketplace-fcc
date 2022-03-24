@@ -18,6 +18,14 @@ type NetworkConfigMap = {
 const SellNft: NextPage = () => {
     const { chainId } = useMoralis()
     const chainString = chainId ? parseInt(chainId).toString() : "31337"
+    const currentNetworkMapping = (networkMapping as NetworkConfigMap)[chainString]
+
+    if (!currentNetworkMapping) {
+        const error = `No entry in networkMapping.json matching the current chain ID of ${chainString}`
+        console.error(error)
+        return <div>Error: {error}</div>
+    }
+
     const nftMarketplaceAddress = (networkMapping as NetworkConfigMap)[chainString]
         .NftMarketplace[0]
     const [nftAddress, setNftAddress] = useState("")

@@ -58,7 +58,7 @@ After installing dependencies, start a node on it's own terminal with:
 yarn hardhat node
 ```
 
-You'll see a line in the output that tells you where your `NftMarketplace` is running, be sure to grab that address. You'll want to update the value in `front-end-typescript/constants/networkMapping.json` with this new address. 
+You'll see a line in the output that tells you where your `NftMarketplace` is running, be sure to grab that address. You'll want to update the value in `front-end-typescript/constants/networkMapping.json` for the correct chain ID with this new address. 
 
 2a. Setup your indexing service
 

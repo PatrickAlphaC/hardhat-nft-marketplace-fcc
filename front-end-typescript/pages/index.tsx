@@ -15,8 +15,10 @@ const isValidNetwork = (network: string) => {
 }
 
 const Home: NextPage = () => {
+    // TODO: Implement paging in UI
     const [page, setPage] = useState(1)
-    const { isAuthenticated, web3, isWeb3Enabled } = useMoralis()
+
+    const { Moralis, isAuthenticated, web3, isWeb3Enabled } = useMoralis()
 
     const { data: listedNfts, isFetching: fetchingListedNfts } = useMoralisQuery(
         "ActiveItem",
@@ -41,6 +43,10 @@ const Home: NextPage = () => {
         getChainId()
     }, [isAuthenticated, isWeb3Enabled])
 
+    Moralis.onChainChanged(() => {
+        window.location.reload()
+    })
+
     const [showNetworkSwitcherDialog, setShowNetworkSwitcherDialog] = useState(false)
 
     useEffect(() => {
@@ -56,14 +62,11 @@ const Home: NextPage = () => {
 
     return (
         <>
-            <BannerStrip
-                type="error"
-                text="Connected to unsupported network"
-                buttonDisplayed
-            />
+            {showNetworkSwitcherDialog && (
+                <BannerStrip type="error" text="Connected to unsupported network" />
+            )}
             <div className="container mx-auto">
                 <h1 className="py-4 px-4 font-bold text-2xl">Recently Listed</h1>
-                <div>{showNetworkSwitcherDialog.toString()}</div>
                 <div className="flex flex-wrap">
                     {fetchingListedNfts ? (
                         <div>Loading...</div>

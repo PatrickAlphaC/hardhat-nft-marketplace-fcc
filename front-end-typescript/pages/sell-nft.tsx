@@ -26,8 +26,7 @@ const SellNft: NextPage = () => {
         return <div>Error: {error}</div>
     }
 
-    const nftMarketplaceAddress = (networkMapping as NetworkConfigMap)[chainString]
-        .NftMarketplace[0]
+    const nftMarketplaceAddress = currentNetworkMapping.NftMarketplace[0]
     const [nftAddress, setNftAddress] = useState("")
     const [tokenId, setTokenId] = useState(null)
     const [price, setPrice] = useState(0)

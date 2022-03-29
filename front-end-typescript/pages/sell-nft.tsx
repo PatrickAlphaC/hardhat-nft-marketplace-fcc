@@ -1,10 +1,11 @@
 import type { NextPage } from "next"
-import { Form, useNotification } from "web3uikit"
+import { Button, Form, useNotification } from "web3uikit"
 import { useWeb3Contract, useMoralis } from "react-moralis"
 import nftMarketplaceAbi from "../constants/NftMarketplace.json"
 import nftAbi from "../constants/BasicNft.json"
 import networkMapping from "../constants/networkMapping.json"
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
+import { useEffect, useState } from "react"
 
 type NetworkConfigItem = {
     NftMarketplace: string[]
@@ -15,10 +16,9 @@ type NetworkConfigMap = {
 }
 
 const SellNft: NextPage = () => {
-
     const dispatch = useNotification()
 
-    const { chainId } = useMoralis()
+    const { chainId, account } = useMoralis()
     const chainString = chainId ? parseInt(chainId).toString() : "31337"
     const currentNetworkMapping = (networkMapping as NetworkConfigMap)[chainString]
 
@@ -37,7 +37,7 @@ const SellNft: NextPage = () => {
         dispatch({
             type: "success",
             message: "Item listed successfully",
-            title: "Item listed",
+            title: "Item Listed",
             position: "topR",
         })
     }
@@ -58,7 +58,7 @@ const SellNft: NextPage = () => {
 
         await runContractFunction({
             params: options,
-            onSuccess: handleListItemSuccess
+            onSuccess: handleListItemSuccess,
         })
     }
 
@@ -85,6 +85,57 @@ const SellNft: NextPage = () => {
                 ),
         })
     }
+
+    const [availableProceeds, setAvailableProceeds] = useState<BigNumber | undefined>(undefined)
+
+    const fetchAvailableProceeds = async () => {
+        const options = {
+            abi: nftMarketplaceAbi,
+            contractAddress: nftMarketplaceAddress,
+            functionName: "getProceeds",
+            params: {
+                seller: account,
+            },
+        }
+
+        const result = await runContractFunction({
+            params: options,
+        })
+
+        // @ts-ignore
+        console.log(result)
+
+        setAvailableProceeds(result as BigNumber)
+    }
+
+    useEffect(() => {
+        fetchAvailableProceeds()
+    }, [account])
+
+    const handleWithdraw = async () => {
+        const options = {
+            abi: nftMarketplaceAbi,
+            contractAddress: nftMarketplaceAddress,
+            functionName: "withdrawProceeds",
+        }
+
+        await runContractFunction({
+            params: options,
+            onSuccess: handleWithdrawSuccess,
+        })
+    }
+
+    const handleWithdrawSuccess = () => {
+        dispatch({
+            type: "success",
+            message: "Proceeds withdrawn successfully",
+            title: "Proceeds Withdrawn",
+            position: "topR",
+        })
+    }
+
+    const hasNonZeroAvailableProceeds =
+        availableProceeds !== undefined && !availableProceeds.isZero()
 
     return (
         <div className="container mx-auto">
@@ -120,6 +171,25 @@ const SellNft: NextPage = () => {
                 title="Sell your NFT!"
                 id="Main Form"
             />
+            <div className="p-2 flex flex-col gap-2 justify-items-start w-fit">
+                <h2 className="text-2xl">Withdraw proceeds</h2>
+                {hasNonZeroAvailableProceeds ? (
+                    <p>
+                        Sales proceeds available for withdrawal:{" "}
+                        {ethers.utils.formatEther(availableProceeds as BigNumber)} ЕТH
+                    </p>
+                ) : (
+                    <p>No withdrawable proceeds detected</p>
+                )}
+                <Button
+                    disabled={!hasNonZeroAvailableProceeds}
+                    id="withdraw-proceeds"
+                    onClick={handleWithdraw}
+                    text="Withdraw"
+                    theme="primary"
+                    type="button"
+                />
+            </div>
         </div>
     )
 }

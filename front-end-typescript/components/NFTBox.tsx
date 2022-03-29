@@ -154,7 +154,7 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         dispatch({
             type: "success",
             message: "Listing canceled successfully",
-            title: "Listing canceled",
+            title: "Listing Canceled",
             position: "topR",
         })
         setShowCancelListingModal(false)
@@ -164,7 +164,7 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         dispatch({
             type: "success",
             message: "Item bought successfully",
-            title: "Item bought",
+            title: "Item Bought",
             position: "topR",
         })
     }

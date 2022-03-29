@@ -1,5 +1,5 @@
 import type { NextPage } from "next"
-import { Card, Tooltip, Illustration, Modal } from "web3uikit"
+import { Card, Tooltip, Illustration, Modal, useNotification } from "web3uikit"
 import nftAbi from "../constants/BasicNft.json"
 import nftMarketplaceAbi from "../constants/NftMarketplace.json"
 
@@ -64,9 +64,7 @@ const truncateStr = (fullStr: string, strLen: number) => {
         frontChars = Math.ceil(charsToShow / 2),
         backChars = Math.floor(charsToShow / 2)
 
-    return (
-        fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars)
-    )
+    return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars)
 }
 
 const NFTBox: NextPage<NFTBoxProps> = ({
@@ -81,6 +79,8 @@ const NFTBox: NextPage<NFTBoxProps> = ({
     const [imageURI, setImageURI] = useState<string | undefined>()
     const [tokenName, setTokenName] = useState<string | undefined>()
     const [tokenDescription, setTokenDescription] = useState<string | undefined>()
+
+    const dispatch = useNotification()
 
     const { runContractFunction: getTokenURI, data: tokenURI } = useWeb3Contract({
         abi: nftAbi,
@@ -134,36 +134,40 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         isWeb3Enabled && getTokenURI()
     }, [isWeb3Enabled])
 
-    // These only work on valid chains, sorry - doesn't work locally
-    // const options: tokenIdMetadataParams = {
-    //     chain: chainId!.toString() as chainType,
-    //     address: nftAddress,
-    //     token_id: tokenId.toString(),
-    // }
 
-    // const { fetch, data, error, isLoading } = useMoralisWeb3ApiCall(
-    //     Web3Api.token.getTokenIdMetadata,
-    //     options
-    // )
-    // const getTokenIdMetadata = async () => {
-    //     try {
-    //         const result = await Web3Api.token.getTokenIdMetadata(options)
-    //         console.log(result)
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
 
     const isOwnedByUser = seller === account
     const formattedSellerAddress = isOwnedByUser ? "you" : truncateStr(seller, 15)
 
-    const handleCardClick = () => (isOwnedByUser ? setShowCancelListingModal(true) : buyItem())
+    const handleCardClick = () => (isOwnedByUser ? setShowCancelListingModal(true) : buyItem({
+        onSuccess: () => handleBuyItemSuccess(),
+    }))
+
+    // State to handle display of 'cancel listing' modal
 
     const [showCancelListingModal, setShowCancelListingModal] = useState(false)
-
     const hideCancelListingModal = () => setShowCancelListingModal(false)
 
-    const handleCancelListingSuccess = () => setShowCancelListingModal(false)
+    // Action success handlers
+
+    const handleCancelListingSuccess = () => {
+        dispatch({
+            type: "success",
+            message: "Listing canceled successfully",
+            title: "Listing canceled",
+            position: "topR",
+        })
+        setShowCancelListingModal(false)
+    }
+
+    const handleBuyItemSuccess = () => {
+        dispatch({
+            type: "success",
+            message: "Item bought successfully",
+            title: "Item bought",
+            position: "topR",
+        })
+    }
 
     return (
         <div className="p-2">
@@ -240,4 +244,5 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         </div>
     )
 }
+
 export default NFTBox

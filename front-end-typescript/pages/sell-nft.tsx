@@ -1,10 +1,9 @@
 import type { NextPage } from "next"
-import { Form } from "web3uikit"
+import { Form, useNotification } from "web3uikit"
 import { useWeb3Contract, useMoralis } from "react-moralis"
 import nftMarketplaceAbi from "../constants/NftMarketplace.json"
 import nftAbi from "../constants/BasicNft.json"
 import networkMapping from "../constants/networkMapping.json"
-import { useState } from "react"
 import { ethers } from "ethers"
 
 type NetworkConfigItem = {
@@ -16,6 +15,9 @@ type NetworkConfigMap = {
 }
 
 const SellNft: NextPage = () => {
+
+    const dispatch = useNotification()
+
     const { chainId } = useMoralis()
     const chainString = chainId ? parseInt(chainId).toString() : "31337"
     const currentNetworkMapping = (networkMapping as NetworkConfigMap)[chainString]
@@ -30,6 +32,15 @@ const SellNft: NextPage = () => {
 
     // @ts-ignore
     const { data, error, runContractFunction, isFetching, isLoading } = useWeb3Contract()
+
+    const handleListItemSuccess = () => {
+        dispatch({
+            type: "success",
+            message: "Item listed successfully",
+            title: "Item listed",
+            position: "topR",
+        })
+    }
 
     async function handleApproveSuccess(nftAddress: string, tokenId: string, price: string) {
         console.log("Approve successful")
@@ -47,6 +58,7 @@ const SellNft: NextPage = () => {
 
         await runContractFunction({
             params: options,
+            onSuccess: handleListItemSuccess
         })
     }
 

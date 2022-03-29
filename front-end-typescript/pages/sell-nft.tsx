@@ -27,78 +27,88 @@ const SellNft: NextPage = () => {
     }
 
     const nftMarketplaceAddress = currentNetworkMapping.NftMarketplace[0]
-    const [nftAddress, setNftAddress] = useState("")
-    const [tokenId, setTokenId] = useState(null)
-    const [price, setPrice] = useState(0)
 
-    const { runContractFunction: listItem } = useWeb3Contract({
-        abi: nftMarketplaceAbi,
-        contractAddress: nftMarketplaceAddress,
-        functionName: "buyItem",
-        params: {
-            nftAddress: nftAddress,
-            tokenId: tokenId,
-            price: ethers.utils.formatEther(price.toString()),
-        },
-    })
+    // @ts-ignore
+    const { data, error, runContractFunction, isFetching, isLoading } = useWeb3Contract()
 
-    const { runContractFunction: approve } = useWeb3Contract({
-        abi: nftAbi,
-        contractAddress: nftAddress,
-        functionName: "approve",
-        params: {
-            to: nftMarketplaceAddress,
-            tokenId: tokenId,
-        },
-    })
+    async function handleApproveSuccess(nftAddress: string, tokenId: string, price: string) {
+        console.log("Approve successful")
 
-    async function handleApproveSuccess() {
-        await listItem()
+        const options = {
+            abi: nftMarketplaceAbi,
+            contractAddress: nftMarketplaceAddress,
+            functionName: "listItem",
+            params: {
+                nftAddress: nftAddress,
+                tokenId: tokenId,
+                price: ethers.utils.parseEther(price),
+            },
+        }
+
+        await runContractFunction({
+            params: options,
+        })
     }
 
-    async function approveAndList(data: any) {
-        await approve()
-        // setNftAddress(data.data[0].inputResult)
-        // setTokenId(data.data[1].inputResult)
-        // setPrice(data.data[2].inputResult)
-        // await approve({
-        //     onSuccess: await handleApproveSuccess,
-        // })
+    async function approveAndList(formSubmission: any) {
+        const [nftAddress, tokenId, price] = formSubmission.data
+
+        const options = {
+            abi: nftAbi,
+            contractAddress: nftAddress.inputResult,
+            functionName: "approve",
+            params: {
+                to: nftMarketplaceAddress,
+                tokenId: tokenId.inputResult,
+            },
+        }
+
+        await runContractFunction({
+            params: options,
+            onSuccess: () =>
+                handleApproveSuccess(
+                    nftAddress.inputResult,
+                    tokenId.inputResult,
+                    price.inputResult
+                ),
+        })
     }
 
     return (
-        <Form
-            onSubmit={approveAndList}
-            buttonConfig={{
-                isLoading: false,
-                type: "submit",
-                theme: "primary",
-                text: "Sell NFT!",
-            }}
-            data={[
-                {
-                    inputWidth: "50%",
-                    name: "NFT Address",
-                    type: "text",
-                    value: "",
-                    key: "nftAddress",
-                },
-                {
-                    name: "NFT Token Id",
-                    type: "number",
-                    value: "",
-                    key: "tokenId",
-                },
-                {
-                    name: "Price (in ETH)",
-                    type: "number",
-                    value: "",
-                    key: "price",
-                },
-            ]}
-            title="Sell your NFT!"
-            id="Main Form"
-        />
+        <div className="container mx-auto">
+            <Form
+                onSubmit={approveAndList}
+                buttonConfig={{
+                    isLoading: false,
+                    type: "submit",
+                    theme: "primary",
+                    text: "Sell NFT!",
+                }}
+                data={[
+                    {
+                        inputWidth: "50%",
+                        name: "NFT Address",
+                        type: "text",
+                        value: "",
+                        key: "nftAddress",
+                    },
+                    {
+                        name: "NFT Token Id",
+                        type: "number",
+                        value: "",
+                        key: "tokenId",
+                    },
+                    {
+                        name: "Price (in ETH)",
+                        type: "number",
+                        value: "",
+                        key: "price",
+                    },
+                ]}
+                title="Sell your NFT!"
+                id="Main Form"
+            />
+        </div>
     )
 }
 export default SellNft

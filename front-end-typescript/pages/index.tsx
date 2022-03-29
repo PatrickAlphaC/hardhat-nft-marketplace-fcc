@@ -25,15 +25,20 @@ const Home: NextPage = () => {
                 {fetchingListedNfts ? (
                     <div>Loading...</div>
                 ) : (
-                    listedNfts.map((nft /*, index*/) => (
-                        <NFTBox
-                            price={nft.attributes.price}
-                            nftAddress={nft.attributes.nftAddress}
-                            tokenId={nft.attributes.tokenId}
-                            nftMarketplaceAddress={nft.attributes.address}
-                            key={`${nft.attributes.nftAddress}${nft.attributes.tokenId}`}
-                        />
-                    ))
+                    listedNfts.map((nft /*, index*/) => {
+                        const { price, nftAddress, tokenId, address, seller } = nft.attributes
+
+                        return (
+                            <NFTBox
+                                price={price}
+                                nftAddress={nftAddress}
+                                tokenId={tokenId}
+                                nftMarketplaceAddress={address}
+                                seller={seller}
+                                key={`${nftAddress}${tokenId}`}
+                            />
+                        )
+                    })
                 )}
             </div>
         </div>

@@ -1,5 +1,5 @@
 import type { NextPage } from "next"
-import { Card, Tooltip, Icon, Illustration } from "web3uikit"
+import { Card, Tooltip, Illustration, Modal } from "web3uikit"
 import nftAbi from "../constants/BasicNft.json"
 import nftMarketplaceAbi from "../constants/NftMarketplace.json"
 
@@ -9,7 +9,6 @@ import {
     useMoralisWeb3ApiCall,
     useWeb3Contract,
 } from "react-moralis"
-import { Moralis } from "moralis"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { ethers } from "ethers"
@@ -19,6 +18,7 @@ interface NFTBoxProps {
     nftAddress: string
     tokenId: string
     nftMarketplaceAddress: string
+    seller: string
 }
 
 // type chainType =
@@ -54,13 +54,29 @@ interface NFTBoxProps {
 //     token_id: string
 // }
 
+const truncateStr = (fullStr: string, strLen: number) => {
+    if (fullStr.length <= strLen) return fullStr
+
+    const separator = "..."
+
+    var sepLen = separator.length,
+        charsToShow = strLen - sepLen,
+        frontChars = Math.ceil(charsToShow / 2),
+        backChars = Math.floor(charsToShow / 2)
+
+    return (
+        fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars)
+    )
+}
+
 const NFTBox: NextPage<NFTBoxProps> = ({
     price,
     nftAddress,
     tokenId,
     nftMarketplaceAddress,
+    seller,
 }: NFTBoxProps) => {
-    const { isWeb3Enabled } = useMoralis()
+    const { isWeb3Enabled, account } = useMoralis()
     const Web3Api = useMoralisWeb3Api()
     const [imageURI, setImageURI] = useState<string | undefined>()
     const [tokenName, setTokenName] = useState<string | undefined>()
@@ -80,6 +96,16 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         contractAddress: nftMarketplaceAddress,
         functionName: "buyItem",
         msgValue: price,
+        params: {
+            nftAddress: nftAddress,
+            tokenId: tokenId,
+        },
+    })
+
+    const { runContractFunction: cancelListing } = useWeb3Contract({
+        abi: nftMarketplaceAbi,
+        contractAddress: nftMarketplaceAddress,
+        functionName: "cancelListing",
         params: {
             nftAddress: nftAddress,
             tokenId: tokenId,
@@ -128,24 +154,70 @@ const NFTBox: NextPage<NFTBoxProps> = ({
     //     }
     // }
 
-    async function buy() {
-        await buyItem()
-        console.log(tokenId)
-        console.log(nftAddress)
-    }
+    const isOwnedByUser = seller === account
+    const formattedSellerAddress = isOwnedByUser ? "you" : truncateStr(seller, 15)
+
+    const handleCardClick = () => (isOwnedByUser ? setShowCancelListingModal(true) : buyItem())
+
+    const [showCancelListingModal, setShowCancelListingModal] = useState(false)
+
+    const hideCancelListingModal = () => setShowCancelListingModal(false)
+
+    const handleCancelListingSuccess = () => setShowCancelListingModal(false)
 
     return (
         <div className="p-2">
-            <Card
-                title={tokenName}
-                description={tokenDescription}
-                onClick={async () => await buy()}
+            <Modal
+                isVisible={showCancelListingModal}
+                id="regular"
+                onCancel={hideCancelListingModal}
+                onCloseButtonPressed={hideCancelListingModal}
+                onOk={() =>
+                    cancelListing({
+                        onSuccess: () => handleCancelListingSuccess(),
+                    })
+                }
+                title="NFT Details"
+                okText="Cancel listing"
+                cancelText="Leave it"
+                okButtonColor="red"
             >
-                <Tooltip content="Buy me" position="top">
+                <div
+                    style={{
+                        alignItems: "center",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                    }}
+                >
+                    <div className="flex flex-col items-end gap-2 border-solid border-2 border-gray-400 rounded p-2">
+                        <div>#{tokenId}</div>
+                        {imageURI ? (
+                            <Image
+                                loader={() => imageURI}
+                                src={imageURI}
+                                height="200"
+                                width="200"
+                            />
+                        ) : (
+                            <Illustration height="180px" logo="lazyNft" width="100%" />
+                        )}
+                        <div className="font-bold">{ethers.utils.formatEther(price)} ETH</div>
+                    </div>
+                    <p className="p-4 text-lg">
+                        This is your listing. Would you like to cancel it?
+                    </p>
+                </div>
+            </Modal>
+            <Card title={tokenName} description={tokenDescription} onClick={handleCardClick}>
+                <Tooltip content={isOwnedByUser ? "Cancel listing" : "Buy me"} position="top">
                     <div className="p-2">
                         {imageURI ? (
                             <div className="flex flex-col items-end gap-2">
                                 <div>#{tokenId}</div>
+                                <div className="italic text-sm">
+                                    Owned by {formattedSellerAddress}
+                                </div>
                                 <Image
                                     loader={() => imageURI}
                                     src={imageURI}

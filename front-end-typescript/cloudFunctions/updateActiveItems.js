@@ -8,6 +8,7 @@ Moralis.Cloud.afterSave("ItemListed", async (request) => {
         activeItem.set("nftAddress", request.object.get("nftAddress"))
         activeItem.set("price", request.object.get("price"))
         activeItem.set("tokenId", request.object.get("tokenId"))
+        activeItem.set("seller", request.object.get("seller"))
         logger.info(
             `Adding Address: ${request.object.get("address")} TokenId: ${request.object.get(
                 "tokenId"

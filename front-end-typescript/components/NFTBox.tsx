@@ -12,13 +12,15 @@ import {
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { ethers } from "ethers"
+import { SellNFTModal } from "./SellNFTModal"
+import { UpdateListingModal } from "./UpdateListingModal"
 
 interface NFTBoxProps {
-    price: number
+    price?: number
     nftAddress: string
     tokenId: string
     nftMarketplaceAddress: string
-    seller: string
+    seller?: string
 }
 
 // type chainType =
@@ -79,7 +81,6 @@ const NFTBox: NextPage<NFTBoxProps> = ({
     const [imageURI, setImageURI] = useState<string | undefined>()
     const [tokenName, setTokenName] = useState<string | undefined>()
     const [tokenDescription, setTokenDescription] = useState<string | undefined>()
-    const [priceToUpdateListingWith, setPriceToUpdateListingWith] = useState<string | undefined>()
 
     const dispatch = useNotification()
 
@@ -100,27 +101,6 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         params: {
             nftAddress: nftAddress,
             tokenId: tokenId,
-        },
-    })
-
-    const { runContractFunction: cancelListing } = useWeb3Contract({
-        abi: nftMarketplaceAbi,
-        contractAddress: nftMarketplaceAddress,
-        functionName: "cancelListing",
-        params: {
-            nftAddress: nftAddress,
-            tokenId: tokenId,
-        },
-    })
-
-    const { runContractFunction: updateListing } = useWeb3Contract({
-        abi: nftMarketplaceAbi,
-        contractAddress: nftMarketplaceAddress,
-        functionName: "updateListing",
-        params: {
-            nftAddress: nftAddress,
-            tokenId: tokenId,
-            newPrice: ethers.utils.parseEther(priceToUpdateListingWith || "0"),
         },
     })
 
@@ -146,42 +126,15 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         isWeb3Enabled && getTokenURI()
     }, [isWeb3Enabled])
 
-    const isOwnedByUser = seller === account
-    const formattedSellerAddress = isOwnedByUser ? "you" : truncateStr(seller, 15)
+    const isOwnedByUser = seller === account || seller === undefined
+    const formattedSellerAddress = isOwnedByUser ? "you" : truncateStr(seller || "", 15)
 
     const handleCardClick = () =>
         isOwnedByUser
-            ? setShowUpdateListingModal(true)
+            ? setShowModal(true)
             : buyItem({
                   onSuccess: () => handleBuyItemSuccess(),
               })
-
-    // State to handle display of 'update listing' modal
-
-    const [showUpdateListingModal, setShowUpdateListingModal] = useState(false)
-    const hideUpdateListingModal = () => setShowUpdateListingModal(false)
-
-    // Action success handlers
-
-    const handleUpdateListingSuccess = () => {
-        dispatch({
-            type: "success",
-            message: "Listing updated successfully",
-            title: "Listing Updated",
-            position: "topR",
-        })
-        setShowUpdateListingModal(false)
-    }
-
-    const handleCancelListingSuccess = () => {
-        dispatch({
-            type: "success",
-            message: "Listing canceled successfully",
-            title: "Listing Canceled",
-            position: "topR",
-        })
-        setShowUpdateListingModal(false)
-    }
 
     const handleBuyItemSuccess = () => {
         dispatch({
@@ -192,76 +145,41 @@ const NFTBox: NextPage<NFTBoxProps> = ({
         })
     }
 
+    // State to handle display of 'create listing' or 'update listing' modal
+    const [showModal, setShowModal] = useState(false)
+    const hideModal = () => setShowModal(false)
+    const isListed = seller !== undefined
+
+    const tooltipContent = isListed
+        ? isOwnedByUser
+            ? "Update listing"
+            : "Buy me"
+        : "Create listing"
+
     return (
         <div className="p-2">
-            <Modal
-                isVisible={showUpdateListingModal}
-                id="regular"
-                onCancel={hideUpdateListingModal}
-                onCloseButtonPressed={hideUpdateListingModal}
-                onOk={() =>
-                    updateListing({
-                        onSuccess: () => handleUpdateListingSuccess(),
-                    })
-                }
-                title="NFT Details"
-                okText="Save New Listing Price"
-                cancelText="Leave it"
-                isOkDisabled={!priceToUpdateListingWith}
-            >
-                <div
-                    style={{
-                        alignItems: "center",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                    }}
-                >
-                    <div className="flex flex-col items-center gap-4">
-                        <p className="p-4 text-lg">
-                            This is your listing. You may either update the listing price or cancel
-                            it.
-                        </p>
-                        <div className="flex flex-col items-end gap-2 border-solid border-2 border-gray-400 rounded p-2 w-fit">
-                            <div>#{tokenId}</div>
-                            {imageURI ? (
-                                <Image
-                                    loader={() => imageURI}
-                                    src={imageURI}
-                                    height="200"
-                                    width="200"
-                                />
-                            ) : (
-                                <Illustration height="180px" logo="lazyNft" width="100%" />
-                            )}
-                            <div className="font-bold">{ethers.utils.formatEther(price)} ETH</div>
-                        </div>
-                        <Input
-                            label="Update listing price"
-                            name="New listing price"
-                            onChange={(event) => {
-                                setPriceToUpdateListingWith(event.target.value)
-                            }}
-                            type="number"
-                        />
-                        or
-                        <Button
-                            id="cancel-listing"
-                            onClick={() =>
-                                cancelListing({
-                                    onSuccess: () => handleCancelListingSuccess(),
-                                })
-                            }
-                            text="Cancel Listing"
-                            theme="colored"
-                            color="red"
-                            type="button"
-                        />
-                    </div>
-                </div>
-            </Modal>
+            <SellNFTModal
+                isVisible={showModal && !isListed}
+                imageURI={imageURI}
+                nftAbi={nftAbi}
+                nftMarketplaceAbi={nftMarketplaceAbi}
+                nftAddress={nftAddress}
+                tokenId={tokenId}
+                onClose={hideModal}
+                nftMarketplaceAddress={nftMarketplaceAddress}
+            />
+            <UpdateListingModal
+                isVisible={showModal && isListed}
+                imageURI={imageURI}
+                nftMarketplaceAbi={nftMarketplaceAbi}
+                nftAddress={nftAddress}
+                tokenId={tokenId}
+                onClose={hideModal}
+                nftMarketplaceAddress={nftMarketplaceAddress}
+                currentPrice={price}
+            />
             <Card title={tokenName} description={tokenDescription} onClick={handleCardClick}>
-                <Tooltip content={isOwnedByUser ? "Update listing" : "Buy me"} position="top">
+                <Tooltip content={tooltipContent} position="top">
                     <div className="p-2">
                         {imageURI ? (
                             <div className="flex flex-col items-end gap-2">
@@ -275,9 +193,11 @@ const NFTBox: NextPage<NFTBoxProps> = ({
                                     height="200"
                                     width="200"
                                 />
-                                <div className="font-bold">
-                                    {ethers.utils.formatEther(price)} ETH
-                                </div>
+                                {price && (
+                                    <div className="font-bold">
+                                        {ethers.utils.formatEther(price)} ETH
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="flex flex-col items-center gap-1">

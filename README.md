@@ -1,4 +1,4 @@
-# Hardhat NextJS NFT Marketplace 
+# Hardhat NFT Marketplace 
 
 <br/>
 <p align="center">
@@ -10,6 +10,8 @@
 This is a repo showing how to make an NFT Marketplace from scratch!
 
 Video Coming soon...
+
+Huge Shoutout to [Matt Durkin](https://twitter.com/mdurkin92) for his help on this repo!
 
 [Full Repo](https://github.com/smartcontractkit/full-blockchain-solidity-course-js)
 

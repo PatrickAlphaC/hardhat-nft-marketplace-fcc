@@ -85,7 +85,6 @@ contract NftMarketplace is ReentrancyGuard {
     /////////////////////
     // Main Functions //
     /////////////////////
-
     /*
      * @notice Method for listing NFT
      * @param nftAddress Address of NFT contract
@@ -142,6 +141,10 @@ contract NftMarketplace is ReentrancyGuard {
         isListed(nftAddress, tokenId, msg.sender)
         nonReentrant
     {
+        // Challenge - How would you refactor this contract to take:
+        // 1. Abitrary tokens as payment? (HINT - Chainlink Price Feeds!)
+        // 2. Be able to set prices in other currencies?
+        // 3. Tweet me @PatrickAlphaC if you come up with a solution!
         Listing memory listedItem = s_listings[nftAddress][tokenId];
         if (msg.value < listedItem.price) {
             revert PriceNotMet(nftAddress, tokenId, listedItem.price);
@@ -149,6 +152,7 @@ contract NftMarketplace is ReentrancyGuard {
         s_proceeds[listedItem.seller] += msg.value;
         // Could just send the money...
         // https://fravoll.github.io/solidity-patterns/pull_over_push.html
+        delete (s_listings[nftAddress][tokenId]);
         IERC721(nftAddress).transferFrom(listedItem.seller, msg.sender, tokenId);
         emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
     }

@@ -4,14 +4,15 @@ const {
     frontEndAbiLocation,
     frontEndAbiLocation2,
 } = require("../helper-hardhat-config")
+require("dotenv").config()
 const fs = require("fs")
 const { network } = require("hardhat")
 
 module.exports = async () => {
     if (process.env.UPDATE_FRONT_END) {
         console.log("Writing to front end...")
-        updateContractAddresses()
-        updateAbi()
+        await updateContractAddresses()
+        await updateAbi()
         console.log("Front end written!")
     }
 }

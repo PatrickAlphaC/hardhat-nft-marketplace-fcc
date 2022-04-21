@@ -1,9 +1,9 @@
 const { ethers, network } = require("hardhat")
 const { moveBlocks } = require("../utils/move-blocks")
 
-const TOKEN_ID = 0
+const TOKEN_ID = 1
 
-async function mintAndList() {
+async function buyItem() {
     const nftMarketplace = await ethers.getContract("NftMarketplace")
     const basicNft = await ethers.getContract("BasicNft")
     const listing = await nftMarketplace.getListing(basicNft.address, TOKEN_ID)
@@ -16,7 +16,7 @@ async function mintAndList() {
     }
 }
 
-mintAndList()
+buyItem()
     .then(() => process.exit(0))
     .catch((error) => {
         console.error(error)

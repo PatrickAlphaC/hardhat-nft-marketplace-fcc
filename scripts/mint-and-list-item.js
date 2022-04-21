@@ -5,7 +5,13 @@ const PRICE = ethers.utils.parseEther("0.1")
 
 async function mintAndList() {
     const nftMarketplace = await ethers.getContract("NftMarketplace")
-    const basicNft = await ethers.getContract("BasicNft")
+    const randomNumber = Math.floor(Math.random() * 2)
+    let basicNft
+    if (randomNumber == 1) {
+        basicNft = await ethers.getContract("BasicNftTwo")
+    } else {
+        basicNft = await ethers.getContract("BasicNft")
+    }
     console.log("Minting NFT...")
     const mintTx = await basicNft.mintNft()
     const mintTxReceipt = await mintTx.wait(1)
@@ -18,7 +24,8 @@ async function mintAndList() {
     await tx.wait(1)
     console.log("NFT Listed!")
     if (network.config.chainId == 31337) {
-        await moveBlocks(5)
+        // Moralis has a hard time if you move more than 1 block!
+        await moveBlocks(1)
     }
 }
 

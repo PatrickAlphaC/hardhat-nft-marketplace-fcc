@@ -4,8 +4,7 @@ pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract BasicNftTwo is ERC721 {
-    string public constant TOKEN_URI =
-        "ipfs://QmdryoExpgEQQQgJPoruwGJyZmz6SqV4FRTX1i73CT3iXn?filename=1-SHIBA_INU.json";
+    string public constant TOKEN_URI = "ipfs://QmdryoExpgEQQQgJPoruwGJyZmz6SqV4FRTX1i73CT3iXn";
     uint256 private s_tokenCounter;
 
     event DogMinted(uint256 indexed tokenId);
@@ -21,7 +20,7 @@ contract BasicNftTwo is ERC721 {
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        // require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         return TOKEN_URI;
     }
 

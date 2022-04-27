@@ -57,11 +57,7 @@ contract NftMarketplace is ReentrancyGuard {
         _;
     }
 
-    modifier isListed(
-        address nftAddress,
-        uint256 tokenId,
-        address owner
-    ) {
+    modifier isListed(address nftAddress, uint256 tokenId) {
         Listing memory listing = s_listings[nftAddress][tokenId];
         if (listing.price <= 0) {
             revert NotListed(nftAddress, tokenId);
@@ -89,9 +85,7 @@ contract NftMarketplace is ReentrancyGuard {
      * @notice Method for listing NFT
      * @param nftAddress Address of NFT contract
      * @param tokenId Token ID of NFT
-     * @param price sale price for each iteam
-     * @dev technically, we could also check for approvals instead of just owners
-     * but we did just owners for simplicity
+     * @param price sale price for each item
      */
     function listItem(
         address nftAddress,
@@ -121,7 +115,7 @@ contract NftMarketplace is ReentrancyGuard {
     function cancelListing(address nftAddress, uint256 tokenId)
         external
         isOwner(nftAddress, tokenId, msg.sender)
-        isListed(nftAddress, tokenId, msg.sender)
+        isListed(nftAddress, tokenId)
     {
         delete (s_listings[nftAddress][tokenId]);
         emit ItemCanceled(msg.sender, nftAddress, tokenId);
@@ -138,7 +132,7 @@ contract NftMarketplace is ReentrancyGuard {
     function buyItem(address nftAddress, uint256 tokenId)
         external
         payable
-        isListed(nftAddress, tokenId, msg.sender)
+        isListed(nftAddress, tokenId)
         nonReentrant
     {
         // Challenge - How would you refactor this contract to take:
@@ -153,7 +147,7 @@ contract NftMarketplace is ReentrancyGuard {
         // Could just send the money...
         // https://fravoll.github.io/solidity-patterns/pull_over_push.html
         delete (s_listings[nftAddress][tokenId]);
-        IERC721(nftAddress).transferFrom(listedItem.seller, msg.sender, tokenId);
+        IERC721(nftAddress).safeTransferFrom(listedItem.seller, msg.sender, tokenId);
         emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
     }
 
@@ -169,7 +163,7 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 newPrice
     )
         external
-        isListed(nftAddress, tokenId, msg.sender)
+        isListed(nftAddress, tokenId)
         nonReentrant
         isOwner(nftAddress, tokenId, msg.sender)
     {

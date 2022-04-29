@@ -48,7 +48,7 @@ async function updateContractAddresses() {
             contractAddresses[chainId]["NftMarketplace"].push(nftMarketplace.address)
         }
     } else {
-        contractAddresses[chainId]["NftMarketplace"] = [nftMarketplace.address]
+        contractAddresses[chainId] = { NftMarketplace: [nftMarketplace.address] }
     }
     fs.writeFileSync(frontEndContractsFile, JSON.stringify(contractAddresses))
     fs.writeFileSync(frontEndContractsFile2, JSON.stringify(contractAddresses))

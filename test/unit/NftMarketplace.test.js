@@ -22,7 +22,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
               await basicNft.approve(nftMarketplaceContract.address, TOKEN_ID)
           })
 
-          describe("listItem", () => {
+          describe("listItem", function () {
               it("emits an event after listing an item", async function () {
                   expect(await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)).to.emit(
                       "ItemListed"
@@ -58,7 +58,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   assert(listing.seller.toString() == deployer.address)
               })
           })
-          describe("cancelListing", () => {
+          describe("cancelListing", function () {
               it("reverts if there is no listing", async function () {
                   const error = `NotListed("${basicNft.address}", ${TOKEN_ID})`
                   await expect(
@@ -82,7 +82,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   assert(listing.price.toString() == "0")
               })
           })
-          describe("buyItem", () => {
+          describe("buyItem", function () {
               it("reverts if the item isnt listed", async function () {
                   await expect(
                       nftMarketplace.buyItem(basicNft.address, TOKEN_ID)
@@ -106,7 +106,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   assert(deployerProceeds.toString() == PRICE.toString())
               })
           })
-          describe("updateListing", () => {
+          describe("updateListing", function () {
               it("must be owner and listed", async function () {
                   await expect(
                       nftMarketplace.updateListing(basicNft.address, TOKEN_ID, PRICE)
@@ -127,7 +127,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   assert(listing.price.toString() == updatedPrice.toString())
               })
           })
-          describe("withdrawProceeds", () => {
+          describe("withdrawProceeds", function () {
               it("doesn't allow 0 proceed withdrawls", async function () {
                   await expect(nftMarketplace.withdrawProceeds()).to.be.revertedWith("NoProceeds")
               })

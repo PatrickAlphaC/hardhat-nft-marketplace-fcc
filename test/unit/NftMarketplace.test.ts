@@ -26,7 +26,7 @@ import {NftMarketplace, BasicNft} from "../../typechain-types"
               await basicNft.approve(nftMarketplaceContract.address, TOKEN_ID)
           })
 
-          describe("listItem", () => {
+          describe("listItem", function () {
               it("emits an event after listing an item", async function () {
                   expect(await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)).to.emit(
                     nftMarketplace,
@@ -63,7 +63,7 @@ import {NftMarketplace, BasicNft} from "../../typechain-types"
                   assert(listing.seller.toString() == await deployer.getAddress())
               })
           })
-          describe("cancelListing", () => {
+          describe("cancelListing", function () {
               it("reverts if there is no listing", async function () {
                   const error = `NotListed("${basicNft.address}", ${TOKEN_ID})`
                   await expect(
@@ -88,7 +88,7 @@ import {NftMarketplace, BasicNft} from "../../typechain-types"
                   assert(listing.price.toString() == "0")
               })
           })
-          describe("buyItem", () => {
+          describe("buyItem", function () {
               it("reverts if the item isnt listed", async function () {
                   await expect(
                       nftMarketplace.buyItem(basicNft.address, TOKEN_ID)
@@ -112,7 +112,7 @@ import {NftMarketplace, BasicNft} from "../../typechain-types"
                   assert(deployerProceeds.toString() == PRICE.toString())
               })
           })
-          describe("updateListing", () => {
+          describe("updateListing", function () {
               it("must be owner and listed", async function () {
                   await expect(
                       nftMarketplace.updateListing(basicNft.address, TOKEN_ID, PRICE)
@@ -133,7 +133,7 @@ import {NftMarketplace, BasicNft} from "../../typechain-types"
                   assert(listing.price.toString() == updatedPrice.toString())
               })
           })
-          describe("withdrawProceeds", () => {
+          describe("withdrawProceeds", function () {
               it("doesn't allow 0 proceed withdrawls", async function () {
                   await expect(nftMarketplace.withdrawProceeds()).to.be.revertedWith("NoProceeds")
               })

@@ -1,14 +1,18 @@
-const {
+import {
     frontEndContractsFile,
     frontEndContractsFile2,
     frontEndAbiLocation,
     frontEndAbiLocation2,
-} = require("../helper-hardhat-config")
-require("dotenv").config()
-const fs = require("fs")
-const { network } = require("hardhat")
+} from "../helper-hardhat-config"
+import "dotenv/config"
+import fs from "fs"
+import { network, ethers } from "hardhat"
+import {DeployFunction} from "hardhat-deploy/types"
+import {HardhatRuntimeEnvironment} from "hardhat/types"
 
-module.exports = async () => {
+const updateFrontEnd: DeployFunction = async function (
+    hre: HardhatRuntimeEnvironment
+  ) {
     if (process.env.UPDATE_FRONT_END) {
         console.log("Writing to front end...")
         await updateContractAddresses()
@@ -21,26 +25,26 @@ async function updateAbi() {
     const nftMarketplace = await ethers.getContract("NftMarketplace")
     fs.writeFileSync(
         `${frontEndAbiLocation}NftMarketplace.json`,
-        nftMarketplace.interface.format(ethers.utils.FormatTypes.json)
+        nftMarketplace.interface.format(ethers.utils.FormatTypes.json).toString()
     )
     fs.writeFileSync(
         `${frontEndAbiLocation2}NftMarketplace.json`,
-        nftMarketplace.interface.format(ethers.utils.FormatTypes.json)
+        nftMarketplace.interface.format(ethers.utils.FormatTypes.json).toString()
     )
 
     const basicNft = await ethers.getContract("BasicNft")
     fs.writeFileSync(
         `${frontEndAbiLocation}BasicNft.json`,
-        basicNft.interface.format(ethers.utils.FormatTypes.json)
+        basicNft.interface.format(ethers.utils.FormatTypes.json).toString()
     )
     fs.writeFileSync(
         `${frontEndAbiLocation2}BasicNft.json`,
-        basicNft.interface.format(ethers.utils.FormatTypes.json)
+        basicNft.interface.format(ethers.utils.FormatTypes.json).toString()
     )
 }
 
 async function updateContractAddresses() {
-    const chainId = network.config.chainId.toString()
+    const chainId = network.config.chainId!.toString()
     const nftMarketplace = await ethers.getContract("NftMarketplace")
     const contractAddresses = JSON.parse(fs.readFileSync(frontEndContractsFile, "utf8"))
     if (chainId in contractAddresses) {
@@ -53,4 +57,5 @@ async function updateContractAddresses() {
     fs.writeFileSync(frontEndContractsFile, JSON.stringify(contractAddresses))
     fs.writeFileSync(frontEndContractsFile2, JSON.stringify(contractAddresses))
 }
-module.exports.tags = ["all", "frontend"]
+export default updateFrontEnd
+updateFrontEnd.tags = ["all", "frontend"]

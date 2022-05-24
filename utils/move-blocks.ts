@@ -1,10 +1,10 @@
-const { network } = require("hardhat")
+import { network } from "hardhat"
 
-function sleep(timeInMs) {
+export function sleep(timeInMs) {
     return new Promise((resolve) => setTimeout(resolve, timeInMs))
 }
 
-async function moveBlocks(amount, sleepAmount = 0) {
+export async function moveBlocks(amount, sleepAmount = 0) {
     console.log("Moving blocks...")
     for (let index = 0; index < amount; index++) {
         await network.provider.request({
@@ -17,9 +17,4 @@ async function moveBlocks(amount, sleepAmount = 0) {
         }
     }
     console.log(`Moved ${amount} blocks`)
-}
-
-module.exports = {
-    moveBlocks,
-    sleep,
 }

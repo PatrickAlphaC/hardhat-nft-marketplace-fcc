@@ -1,23 +1,27 @@
-const { assert, expect } = require("chai")
-const { network, deployments, ethers } = require("hardhat")
-const { developmentChains } = require("../../helper-hardhat-config")
+import { Provider } from "@ethersproject/abstract-provider"
+import { assert, expect } from "chai"
+import { Signer } from "ethers"
+import { network, deployments, ethers }from "hardhat"
+import { developmentChains, networkConfig} from "../../helper-hardhat-config"
+import {NftMarketplace, BasicNft} from "../../typechain-types"
 
 !developmentChains.includes(network.name)
     ? describe.skip
     : describe("Nft Marketplace Unit Tests", function () {
-          let nftMarketplace, nftMarketplaceContract, basicNft, basicNftContract
+          let nftMarketplace: NftMarketplace, nftMarketplaceContract: NftMarketplace, basicNft: BasicNft
           const PRICE = ethers.utils.parseEther("0.1")
           const TOKEN_ID = 0
+          let deployer:  Signer 
+          let user: Signer 
 
           beforeEach(async () => {
-              accounts = await ethers.getSigners() // could also do with getNamedAccounts
+              const accounts = await ethers.getSigners() // could also do with getNamedAccounts
               deployer = accounts[0]
               user = accounts[1]
               await deployments.fixture(["all"])
               nftMarketplaceContract = await ethers.getContract("NftMarketplace")
               nftMarketplace = nftMarketplaceContract.connect(deployer)
-              basicNftContract = await ethers.getContract("BasicNft")
-              basicNft = await basicNftContract.connect(deployer)
+              basicNft = await ethers.getContract("BasicNft", deployer)
               await basicNft.mintNft()
               await basicNft.approve(nftMarketplaceContract.address, TOKEN_ID)
           })
@@ -25,6 +29,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
           describe("listItem", () => {
               it("emits an event after listing an item", async function () {
                   expect(await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)).to.emit(
+                    nftMarketplace,
                       "ItemListed"
                   )
               })
@@ -40,7 +45,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
               })
               it("exclusively allows owners to list", async function () {
                   nftMarketplace = nftMarketplaceContract.connect(user)
-                  await basicNft.approve(user.address, TOKEN_ID)
+                  await basicNft.approve(await user.getAddress(), TOKEN_ID)
                   await expect(
                       nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)
                   ).to.be.revertedWith("NotOwner")
@@ -55,7 +60,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)
                   const listing = await nftMarketplace.getListing(basicNft.address, TOKEN_ID)
                   assert(listing.price.toString() == PRICE.toString())
-                  assert(listing.seller.toString() == deployer.address)
+                  assert(listing.seller.toString() == await deployer.getAddress())
               })
           })
           describe("cancelListing", () => {
@@ -68,7 +73,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
               it("reverts if anyone but the owner tries to call", async function () {
                   await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)
                   nftMarketplace = nftMarketplaceContract.connect(user)
-                  await basicNft.approve(user.address, TOKEN_ID)
+                  await basicNft.approve(await user.getAddress(), TOKEN_ID)
                   await expect(
                       nftMarketplace.cancelListing(basicNft.address, TOKEN_ID)
                   ).to.be.revertedWith("NotOwner")
@@ -76,6 +81,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
               it("emits event and removes listing", async function () {
                   await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)
                   expect(await nftMarketplace.cancelListing(basicNft.address, TOKEN_ID)).to.emit(
+                    nftMarketplace,
                       "ItemCanceled"
                   )
                   const listing = await nftMarketplace.getListing(basicNft.address, TOKEN_ID)
@@ -99,10 +105,10 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   nftMarketplace = nftMarketplaceContract.connect(user)
                   expect(
                       await nftMarketplace.buyItem(basicNft.address, TOKEN_ID, { value: PRICE })
-                  ).to.emit("ItemBought")
+                  ).to.emit(nftMarketplace, "ItemBought")
                   const newOwner = await basicNft.ownerOf(TOKEN_ID)
-                  const deployerProceeds = await nftMarketplace.getProceeds(deployer.address)
-                  assert(newOwner.toString() == user.address)
+                  const deployerProceeds = await nftMarketplace.getProceeds(await deployer.getAddress())
+                  assert(newOwner.toString() == await user.getAddress())
                   assert(deployerProceeds.toString() == PRICE.toString())
               })
           })
@@ -122,7 +128,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)
                   expect(
                       await nftMarketplace.updateListing(basicNft.address, TOKEN_ID, updatedPrice)
-                  ).to.emit("ItemListed")
+                  ).to.emit(nftMarketplace, "ItemListed")
                   const listing = await nftMarketplace.getListing(basicNft.address, TOKEN_ID)
                   assert(listing.price.toString() == updatedPrice.toString())
               })
@@ -137,7 +143,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   await nftMarketplace.buyItem(basicNft.address, TOKEN_ID, { value: PRICE })
                   nftMarketplace = nftMarketplaceContract.connect(deployer)
 
-                  const deployerProceedsBefore = await nftMarketplace.getProceeds(deployer.address)
+                  const deployerProceedsBefore = await nftMarketplace.getProceeds(await deployer.getAddress())
                   const deployerBalanceBefore = await deployer.getBalance()
                   const txResponse = await nftMarketplace.withdrawProceeds()
                   const transactionReceipt = await txResponse.wait(1)

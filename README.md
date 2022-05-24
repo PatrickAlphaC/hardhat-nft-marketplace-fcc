@@ -47,11 +47,11 @@ Huge Shoutout to [Matt Durkin](https://twitter.com/mdurkin92) for his help on th
 git clone https://github.com/PatrickAlphaC/hardhat-nextjs-nft-marketplace-fcc
 cd hardhat-nextjs-nft-marketplace-fcc
 yarn
+yarn typechain
 ```
 
 ## Typescript
 
-TODO!!
 
 For the typescript edition, run:
 

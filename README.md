@@ -15,11 +15,12 @@ Huge Shoutout to [Matt Durkin](https://twitter.com/mdurkin92) for his help on th
 
 [Full Repo](https://github.com/smartcontractkit/full-blockchain-solidity-course-js)
 
-- [Hardhat NextJS NFT Marketplace](#hardhat-nextjs-nft-marketplace)
+- [Hardhat NFT Marketplace](#hardhat-nft-marketplace)
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)
   - [Quickstart](#quickstart)
   - [Typescript](#typescript)
+    - [Optional Gitpod](#optional-gitpod)
 - [Usage](#usage)
   - [Testing](#testing)
 - [Deployment to a testnet or mainnet](#deployment-to-a-testnet-or-mainnet)
@@ -57,6 +58,12 @@ For the typescript edition, run:
 ```
 git checkout typescript
 ```
+
+### Optional Gitpod
+
+If you can't or don't want to run and install locally, you can work with this repo in Gitpod. If you do this, you can skip the `clone this repo` part.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#github.com/PatrickAlphaC/hardhat-nft-marketplace-fcc)
 
 
 # Usage

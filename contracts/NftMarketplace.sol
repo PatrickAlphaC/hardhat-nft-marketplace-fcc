@@ -167,6 +167,10 @@ contract NftMarketplace is ReentrancyGuard {
         nonReentrant
         isOwner(nftAddress, tokenId, msg.sender)
     {
+        //We should check the value of `newPrice` and revert if it's below zero (like we also check in `listItem()`)
+        if (newPrice <= 0) {
+            revert PriceMustBeAboveZero();
+        }
         s_listings[nftAddress][tokenId].price = newPrice;
         emit ItemListed(msg.sender, nftAddress, tokenId, newPrice);
     }

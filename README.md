@@ -9,8 +9,6 @@
 
 This is a repo showing how to make an NFT Marketplace from scratch!
 
-Video Coming soon...
-
 Huge Shoutout to [Matt Durkin](https://twitter.com/mdurkin92) for his help on this repo!
 
 [Full Repo](https://github.com/smartcontractkit/full-blockchain-solidity-course-js)
@@ -64,6 +62,8 @@ git checkout typescript
 If you can't or don't want to run and install locally, you can work with this repo in Gitpod. If you do this, you can skip the `clone this repo` part.
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#github.com/PatrickAlphaC/hardhat-nft-marketplace-fcc)
+
+> Remember if you are using gitpod then you cannot connect your local hardhat node with metamask. To resolve this you can use vs code or testnets instead of local node.
 
 
 # Usage

@@ -32,9 +32,11 @@ const frontEndContractsFile2 =
     "../nextjs-nft-marketplace-thegraph-fcc/constants/networkMapping.json"
 const frontEndAbiLocation = "../nextjs-nft-marketplace-moralis-fcc/constants/"
 const frontEndAbiLocation2 = "../nextjs-nft-marketplace-thegraph-fcc/constants/"
+const uriContracts = "./constants/token-URIs.json"
 
 module.exports = {
     networkConfig,
+    uriContracts,
     developmentChains,
     VERIFICATION_BLOCK_CONFIRMATIONS,
     frontEndContractsFile,

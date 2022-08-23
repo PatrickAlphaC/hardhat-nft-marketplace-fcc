@@ -1,3 +1,5 @@
+//Remember to mine the blocks by mine.js file, after running every Tx
+
 const { ethers, network } = require("hardhat")
 const { moveBlocks } = require("../utils/move-blocks")
 

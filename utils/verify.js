@@ -1,5 +1,4 @@
-const { run, network } = require("hardhat")
-const { networkConfig } = require("../helper-hardhat-config")
+const { run } = require("hardhat")
 
 const verify = async (contractAddress, args) => {
     console.log("Verifying contract...")

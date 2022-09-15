@@ -93,7 +93,7 @@ module.exports = {
     },
     contractSizer: {
         runOnCompile: false,
-        only: ["Raffle"],
+        only: ["NftMarketplace"],
     },
     namedAccounts: {
         deployer: {

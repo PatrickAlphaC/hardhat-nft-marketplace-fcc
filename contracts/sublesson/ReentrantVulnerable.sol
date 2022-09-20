@@ -37,7 +37,7 @@ contract ReentrantVulnerable {
         balances[msg.sender] += msg.value;
     }
 
-    function withdraw() public {
+    function withdraw() public payable {
         uint256 bal = balances[msg.sender];
         require(bal > 0);
 

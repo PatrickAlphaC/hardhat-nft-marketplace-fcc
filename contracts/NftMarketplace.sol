@@ -50,8 +50,7 @@ contract NftMarketplace is ReentrancyGuard {
 
     modifier notListed(
         address nftAddress,
-        uint256 tokenId,
-        address owner
+        uint256 tokenId
     ) {
         Listing memory listing = s_listings[nftAddress][tokenId];
         if (listing.price > 0) {
@@ -112,7 +111,7 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 price
     )
         external
-        notListed(nftAddress, tokenId, msg.sender)
+        notListed(nftAddress, tokenId)
         isOwner(nftAddress, tokenId, msg.sender)
     {
         if (price <= 0) {

@@ -11,10 +11,10 @@ const networkConfig = {
         raffleEntranceFee: "100000000000000000", // 0.1 ETH
         callbackGasLimit: "500000", // 500,000 gas
     },
-    5: {
-        name: "goerli",
+    11155111: {
+        name: "sepolia",
         subscriptionId: "588",
-        gasLane: "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15", // 30 gwei
+        gasLane: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c", // 30 gwei
         keepersUpdateInterval: "30",
         raffleEntranceFee: "100000000000000000", // 0.1 ETH
         callbackGasLimit: "500000", // 500,000 gas

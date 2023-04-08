@@ -117,6 +117,11 @@ const { developmentChains } = require("../../helper-hardhat-config")
                       nftMarketplace.updateListing(basicNft.address, TOKEN_ID, PRICE)
                   ).to.be.revertedWith("NotOwner")
               })
+              it("reverts if new price is 0", async function () {
+                  const updatedPrice = ethers.utils.parseEther("0")
+                  await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)
+                  await expect(nftMarketplace.updateListing(basicNft.address, TOKEN_ID, updatedPrice)).to.be.revertedWith("PriceMustBeAboveZero")
+              })
               it("updates the price of the item", async function () {
                   const updatedPrice = ethers.utils.parseEther("0.2")
                   await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE)

@@ -57,6 +57,12 @@ const { developmentChains } = require("../../helper-hardhat-config")
                   assert(listing.price.toString() == PRICE.toString())
                   assert(listing.seller.toString() == deployer.address)
               })
+              it("reverts if the price be 0", async () => {
+                const ZERO_PRICE = ethers.utils.parseEther("0")
+                await expect(
+                    nftMarketplace.listItem(basicNft.address, TOKEN_ID, ZERO_PRICE)
+                ).revertedWithCustomError(nftMarketplace, "NftMarketplace__PriceMustBeAboveZero")
+        })
           })
           describe("cancelListing", function () {
               it("reverts if there is no listing", async function () {
